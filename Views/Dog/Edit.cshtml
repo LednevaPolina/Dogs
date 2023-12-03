@@ -1,0 +1,69 @@
+﻿@model Dog
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Отредактируйте данные</h1>
+
+
+<div class="row">
+    <div class="col-6">
+        <form asp-controller="Dog" asp-action="Edit" method="post" enctype="multipart/form-data">
+           
+            <div class="form-group">
+                <label asp-for="Breed"></label>
+                <input asp-for="Breed" class="form-control" />
+                <span asp-validation-for="Breed" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BreedInEnglish"></label>
+                <input asp-for="BreedInEnglish" class="form-control" />
+                <span asp-validation-for="BreedInEnglish" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Origin"></label>
+                <input asp-for="Origin" class="form-control" />
+                <span asp-validation-for="Origin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FCIGroup"></label>
+                <select asp-for="FCIGroup" class="form-control">
+                    <option value="1">FCI 1</option>
+                    <option value="2">FCI 2</option>
+                    <option value="3">FCI 3</option>
+                    <option value="4">FCI 4</option>
+                    <option value="5">FCI 5</option>
+                    <option value="6">FCI 6</option>
+                    <option value="7">FCI 7</option>
+                    <option value="8">FCI 8</option>
+                    <option value="9">FCI 9</option>
+                    <option value="10">FCI 10</option>
+                    <option value="0">Непризнанные FCI</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="DogTags"></label>
+                <select name="tags" asp-items="ViewBag.tags" multiple class="form-select chosen-select">
+                </select>
+            </div>
+
+            <img src="@Model.ImageUrl" height="200" />
+
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Измените изображение</label>
+                <input class="form-control" name="Image" type="file" id="formFile" required>
+            </div>
+            <div class="form-group">
+                <label asp-for="BehaviorCharacter"></label>
+                <textarea asp-for="BehaviorCharacter" class="form-control" rows="10"></textarea>
+                <span asp-validation-for="BehaviorCharacter" class="text-danger"></span>
+            </div>
+            <button class="btn btn-outline-primary w-25 mt-2">Изменить</button>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

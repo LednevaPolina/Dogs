@@ -1,0 +1,47 @@
+﻿@model Dog
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>FCI Group @Model.FCIGroup | @Model.Breed</h1>
+
+@*<div class="card mb-3">
+    <img src="@Model.ImageUrl" class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">@Model.BreedInEnglish</h5>        
+    </div>
+    <ul class="list-group list-group-flush">
+        @foreach (var item in @Model.DogTags)
+        {
+            <li class="list-group-item">@item.Tag.Name</li>
+        }
+
+    </ul>
+    <div class="card-body">
+        <p class="card-link">@Html.Raw(@Model.BehaviorCharacter)</p>
+
+        
+    </div>
+    <a asp-action="Index" asp-controller="Dog" class="btn btn-outline-info">Назад</a>
+</div>*@
+<div class="card" >
+    <div class="row g-0">
+        <div class="col-md-4">
+            <img src="@Model.ImageUrl" class="img-fluid rounded-start" alt="...">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">@Model.BreedInEnglish</h5>
+                <p class="card-text "><i>@Model.Origin</i></p>
+                <p class="card-text">@Model.BehaviorCharacter</p>
+                <p class="card-text">                   
+                    @foreach (var item in @Model.DogTags)
+                    {
+                            <small class="text-body-secondary">@item.Tag.Name</small>
+                    }                    
+                </p>
+                <a asp-action="Index" asp-controller="Dog" class="btn btn-outline-info">Назад</a>
+            </div>
+        </div>
+    </div>
+</div>

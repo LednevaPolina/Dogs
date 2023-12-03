@@ -1,0 +1,23 @@
+﻿@model IEnumerable<Dog>
+@{
+    ViewData["Title"] = "FCI0";
+}
+
+<h1>Группа Непризнанные FCI </h1>
+<p>
+</p>
+<h1>Все Непризнанные породы FCI</h1>
+<div class="row">
+    @if (Model != null && Model.Count() > 0)
+    {
+        @foreach (var item in Model)
+        {
+            @if (item.FCIGroup == "0")
+            {
+                <partial name="_DogCardPartial" model="@item"></partial>
+            }
+        }
+    }
+
+</div>
+

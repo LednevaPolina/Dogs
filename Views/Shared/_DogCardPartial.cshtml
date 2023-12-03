@@ -1,0 +1,20 @@
+﻿@model Dog
+
+<div class="card col-4" style="width: 20rem;">
+    <img src="@Model.ImageUrl" class="card-img-top" alt="...">
+    <div class="card-body">
+        <h4 class="card-title text-center">@Model.Breed</h4>
+        <h6 class="text-muted text-center fst-italic">@Model.BreedInEnglish</h6>
+        <p class="text-center">Группа FCI: @Model.FCIGroup</p>
+        <p class="fw-bolder text-center">@Model.Origin</p>
+        <p class="card-text">@Model.BehaviorCharacter</p>
+                
+    </div>
+    <div class="btnbottom">
+        <a asp-controller="Dog" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">Подробнее</a>
+        <a asp-controller="Dog" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-danger">Редактировать</a>
+    </div>
+</div>
+
+
+
