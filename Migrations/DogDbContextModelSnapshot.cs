@@ -43,10 +43,12 @@ namespace Dogs.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("FCIGroup")
+                    b.Property<int>("FCICategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HistoryOfBreed")
                         .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("nvarchar(2)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -58,6 +60,8 @@ namespace Dogs.Migrations
                         .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FCICategoryId");
 
                     b.ToTable("Dogs");
                 });
@@ -85,6 +89,23 @@ namespace Dogs.Migrations
                     b.ToTable("DogTags");
                 });
 
+            modelBuilder.Entity("Dogs.Models.FCICategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FCICategories");
+                });
+
             modelBuilder.Entity("Dogs.Models.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -99,7 +120,18 @@ namespace Dogs.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("Dogs.Models.Dog", b =>
+                {
+                    b.HasOne("Dogs.Models.FCICategory", "FCICategory")
+                        .WithMany("Dogs")
+                        .HasForeignKey("FCICategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FCICategory");
                 });
 
             modelBuilder.Entity("Dogs.Models.DogTag", b =>
@@ -124,6 +156,11 @@ namespace Dogs.Migrations
             modelBuilder.Entity("Dogs.Models.Dog", b =>
                 {
                     b.Navigation("DogTags");
+                });
+
+            modelBuilder.Entity("Dogs.Models.FCICategory", b =>
+                {
+                    b.Navigation("Dogs");
                 });
 
             modelBuilder.Entity("Dogs.Models.Tag", b =>
