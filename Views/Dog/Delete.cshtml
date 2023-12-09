@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewData["Title"] = "Delete";
+}
+@model Dog
+
+<h1>Вы уверены, что хотите удалить @Model.Breed?</h1>
+
+
+<div class="row">
+    <div class="col-4">
+        <a asp-action="Index" asp-controller="Dog" class="btn btn-danger w-100">Отмена</a>
+    </div>
+    <div class="col-4">
+        <form asp-action="Delete" asp-controller="Dog" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button class="btn btn-success w-100">Да</button>
+        </form>
+    </div>
+</div>
+

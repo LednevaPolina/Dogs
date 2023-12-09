@@ -31,25 +31,15 @@
                 <span asp-validation-for="Origin" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FCIGroup"></label>
-                <select asp-for="FCIGroup" class="form-control">
-                    <option value="1">FCI 1</option>
-                    <option value="2">FCI 2</option>
-                    <option value="3">FCI 3</option>
-                    <option value="4">FCI 4</option>
-                    <option value="5">FCI 5</option>
-                    <option value="6">FCI 6</option>
-                    <option value="7">FCI 7</option>
-                    <option value="8">FCI 8</option>
-                    <option value="9">FCI 9</option>
-                    <option value="10">FCI 10</option>
-                    <option value="0">Непризнанные FCI</option>
+                <label asp-for="FCICategoryId"></label>
+                <select asp-for="FCICategoryId" asp-items="ViewBag.fciCategories" class="form-control">
+                    
                 </select>                
             </div> 
             <div class="form-group">
                 <label asp-for="DogTags"></label>
-                <select name="tags" asp-items="ViewBag.tags" multiple class="form-select chosen-select">
-                </select>
+            <select name="tags" asp-items="ViewBag.tags" multiple class="form-select chosen-select" aria-label="Default select example">
+            </select>
             </div>
             <div class="mb-3">
                 <label for="formFile" class="form-label">Добавьте изображение</label>
@@ -59,6 +49,11 @@
                 <label asp-for="BehaviorCharacter"></label>
                 <textarea asp-for="BehaviorCharacter" class="form-control" rows="10"></textarea>
                 <span asp-validation-for="BehaviorCharacter" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HistoryOfBreed"></label>
+                <textarea asp-for="HistoryOfBreed" class="form-control" rows="10"></textarea>
+                <span asp-validation-for="HistoryOfBreed" class="text-danger"></span>
             </div>
             <button class="btn btn-outline-primary w-25 mt-2">Добавить</button>
         </form>

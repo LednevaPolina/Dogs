@@ -10,8 +10,9 @@ namespace Dogs.Models
         }
         public DbSet<Dog>Dogs { get; set; }
 
-        public DbSet<Tag> Tag { get; set; }
+        public DbSet<Tag> Tags { get; set; }
 
         public DbSet<DogTag> DogTags { get; set; }
+        public DbSet<FCICategory> FCICategories { get; set; }
     }
 }

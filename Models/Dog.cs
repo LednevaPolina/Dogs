@@ -18,16 +18,20 @@ namespace Dogs.Models
         [MaxLength(30)]
         [Display(Name = "Происхождение породы")]
         public string Origin { get; set;}
-        [Required(ErrorMessage = "Введите группу FCI!")]
-        [MaxLength(2)]
-        [Display(Name = "Группа FCI")]
-        public string FCIGroup { get; set; }
+        
         [Required]
         [Display(Name = "Добавьте изображение")]
         [DataType(DataType.Upload)]
         public string ImageUrl { get; set; }
         [Display(Name = "Описание поведения и характера")]
         public string BehaviorCharacter { get; set; }
+        [Display(Name = "История породы")]
+        public string HistoryOfBreed { get; set; }
+
+        [Display(Name = "Выберите группу FCI")]
+        public int FCICategoryId { get; set; }
+        
+        public FCICategory FCICategory { get; set; }
         [Display(Name = "Выберите назначение")]
         public IEnumerable<DogTag> DogTags { get; set; }
 

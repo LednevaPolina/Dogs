@@ -21,81 +21,49 @@ namespace Dogs.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            ViewBag.tags = new MultiSelectList(dogDbContext.Tag, "Id", "Name");
+            ViewBag.fciCategories = new SelectList(dogDbContext.FCICategories, "Id", "Name");
+            ViewBag.tags = new MultiSelectList(dogDbContext.Tags, "Id", "Name");
             return View();
         }
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index( int? tagId=null,int? fciCategoryId=null,int page=1)
         {
             
-            var dogs=dogDbContext.Dogs;
-            var tags=dogDbContext.Tag;
-
-            var model=new IndexViewModel() { Dogs = dogs, Tags = tags };
+            var dogs=dogDbContext.Dogs.Include(x=>x.DogTags).ThenInclude(x=>x.Tag).Include(x=>x.FCICategory).OrderByDescending(x=>x.Id);
+            
+            if(fciCategoryId != null && tagId !=null)
+            {
+                dogs = (IOrderedQueryable<Dog>)dogs.Where(x => x.FCICategoryId == fciCategoryId && x.DogTags.All (x => x.TagId == tagId));
+            }
+            else if(fciCategoryId!=null)
+            {
+                dogs= (IOrderedQueryable<Dog>)dogs.Where(x=>x.FCICategoryId==fciCategoryId);
+            }
+            else if (tagId != null)
+            {
+                 dogs = (IOrderedQueryable<Dog>)dogs.Where(x=>x.DogTags.Any(x=>x.TagId==tagId));
+            }
+            
+            var model = new IndexViewModel()
+            {
+                Dogs = dogs,
+                Tags = dogDbContext.Tags,
+                FCICategories = dogDbContext.FCICategories,
+                RecentDogs = dogDbContext.Dogs.OrderByDescending(x => x.Id).Take(3),
+                CurrentPages = page,
+                TotalPages = 10,
+                SelectedFCICategoryId = fciCategoryId,
+                SelectedTagId = tagId
+            };
             return View(model);
         }
-        public IActionResult FCI1()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI2()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI3()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI4()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI5()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI6()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI7()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI8()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI9()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI10()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
-        public IActionResult FCI0()
-        {
-            var dogs = dogDbContext.Dogs;
-            return View(dogs);
-        }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Dog dog, IFormFile Image, int[]tags)
         {
 
-            dog.ImageUrl = await FileUploadHelper.UploadAsync(Image);                    
-
+            dog.ImageUrl = await FileUploadHelper.UploadAsync(Image);           
             TempData["status"] = "Великолепно! Добавлена новая порода!";            
             await dogDbContext.Dogs.AddAsync(dog);
             await dogDbContext.SaveChangesAsync();
@@ -107,30 +75,53 @@ namespace Dogs.Controllers
             //}
             dogDbContext.DogTags.AddRange(tags.Select(a =>  new DogTag() { DogId = dog.Id, TagId = a }));
             await dogDbContext.SaveChangesAsync();
+            //foreach (var item in tags)
+            //{
+            //    dogDbContext.DogTags.Add(new DogTag { TagId = item, DogId = dog.Id });
+            //}
+            //await dogDbContext.SaveChangesAsync();
             return RedirectToAction("Add");
         
-            return View(dog);
+            //return View(dog);
         }
         [HttpGet]
         public IActionResult Details(int id)
         {
-
             var dogs = dogDbContext.Dogs
                 .Include(x => x.DogTags).ThenInclude(x => x.Tag)
+                .Include(x=>x.FCICategory)
                 .FirstOrDefault(dogs => dogs.Id == id);
             return View(dogs);
         }
         [HttpGet]
-        public async Task<IActionResult>Edit(int id)
+        public IActionResult Edit(int id)
         {
             var dogs = dogDbContext.Dogs.Find(id);
 
-            //ViewBag.categories = new SelectList(dogDbContext.Categories, "Id", "Name");
+            ViewBag.fciCategories = new SelectList(dogDbContext.FCICategories, "Id", "Name");
 
             var selectedTagIds = dogDbContext.DogTags.Where(x => x.DogId == id).Select(x => x.TagId);
-            ViewBag.tags = new MultiSelectList(dogDbContext.Tag, "Id", "Name", selectedTagIds);            
+            ViewBag.tags = new MultiSelectList(dogDbContext.Tags, "Id", "Name", selectedTagIds);            
 
             return View(dogs);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var dogs = dogDbContext.Dogs.Find(id);           
+            return View(dogs);
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        public async Task<IActionResult> ConfirmDelete(int id)
+        {
+            var dogs = dogDbContext.Dogs.Find(id);
+            dogDbContext.Dogs.Remove(dogs);
+            await dogDbContext.SaveChangesAsync();
+            TempData["status"] = $"Вы успешно удалили породу {dogs.Breed}!";
+            return RedirectToAction("Index");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -146,16 +137,16 @@ namespace Dogs.Controllers
             await dogDbContext.SaveChangesAsync();
 
 
-            var postWithTags = dogDbContext.Dogs.Include(x =>x.DogTags).FirstOrDefault(x => x.Id == dog.Id);
+            var dogWithTags = dogDbContext.Dogs.Include(x =>x.DogTags).FirstOrDefault(x => x.Id == dog.Id);
             int a = 0;
             dogDbContext.UpdateManyToMany(
-                postWithTags.DogTags,
+                dogWithTags.DogTags,
                 tags.Select(x => new DogTag { DogId = dog.Id, TagId = x }),
                 x => x.TagId
                 );
             await dogDbContext.SaveChangesAsync();
+            TempData["status"] = "Отлично! Вы изменили данные породы!";
 
-           
 
             return RedirectToAction("Index");
         }
