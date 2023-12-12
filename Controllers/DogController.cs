@@ -26,11 +26,16 @@ namespace Dogs.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult Index( int? tagId=null,int? fciCategoryId=null,int page=1)
+
+        public IActionResult Index( string? searchBreed=null,int? tagId=null,int? fciCategoryId=null,int page=1)
         {
             
-            var dogs=dogDbContext.Dogs.Include(x=>x.DogTags).ThenInclude(x=>x.Tag).Include(x=>x.FCICategory).OrderByDescending(x=>x.Id);
-            
+            var dogs=dogDbContext.Dogs.Include(x=>x.DogTags).ThenInclude(x=>x.Tag).Include(x=>x.FCICategory).OrderBy(x=>x.Breed);
+            if(searchBreed !=null)
+            {
+                dogs = (IOrderedQueryable<Dog>)dogs.Where(x => x.Breed == searchBreed);
+            }
+        
             if(fciCategoryId != null && tagId !=null)
             {
                 dogs = (IOrderedQueryable<Dog>)dogs.Where(x => x.FCICategoryId == fciCategoryId && x.DogTags.All (x => x.TagId == tagId));
@@ -43,21 +48,24 @@ namespace Dogs.Controllers
             {
                  dogs = (IOrderedQueryable<Dog>)dogs.Where(x=>x.DogTags.Any(x=>x.TagId==tagId));
             }
-            
-            var model = new IndexViewModel()
-            {
-                Dogs = dogs,
-                Tags = dogDbContext.Tags,
-                FCICategories = dogDbContext.FCICategories,
-                RecentDogs = dogDbContext.Dogs.OrderByDescending(x => x.Id).Take(3),
-                CurrentPages = page,
-                TotalPages = 10,
-                SelectedFCICategoryId = fciCategoryId,
-                SelectedTagId = tagId
-            };
+
+            var model = new IndexViewModel();
+            int totalP = (int)Math.Ceiling(dogs.Count() / (double)model.LimitPage);
+            dogs = (IOrderedQueryable<Dog>)dogs.Skip((page - 1) * model.LimitPage).Take(model.LimitPage);
+            model.Dogs = dogs;
+            model.Tags = dogDbContext.Tags;
+            model.FCICategories = dogDbContext.FCICategories;
+            model.RecentDogs = dogDbContext.Dogs.OrderByDescending(x => x.Id).Take(3);
+            model.CurrentPages = page;
+            model.TotalPages = totalP;
+            model.SelectedFCICategoryId = fciCategoryId;
+            model.SelectedTagId = tagId;
+            model.SearchBreed = searchBreed;
             return View(model);
         }
         
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Dog dog, IFormFile Image, int[]tags)

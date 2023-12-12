@@ -14,7 +14,8 @@ namespace Dogs.ViewModels
         public int? SelectedFCICategoryId { get; set; }
         public int? SelectedTagId { get; set; }
         public int TotalPages { get; set; }
-        
-        public int LimitPage { get; set; }
+        public string? SearchBreed { get; set; }
+        public int LimitPage { get; set; } = 6;
+
     }
 }
