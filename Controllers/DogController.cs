@@ -26,6 +26,7 @@ namespace Dogs.Controllers
             return View();
         }
         [HttpGet]
+
         public IActionResult Index( string? searchBreed=null,int? tagId=null,int? fciCategoryId=null,int page=1)
         {
             
@@ -34,6 +35,7 @@ namespace Dogs.Controllers
             {
                 dogs = (IOrderedQueryable<Dog>)dogs.Where(x => x.Breed == searchBreed);
             }
+        
             if(fciCategoryId != null && tagId !=null)
             {
                 dogs = (IOrderedQueryable<Dog>)dogs.Where(x => x.FCICategoryId == fciCategoryId && x.DogTags.All (x => x.TagId == tagId));
@@ -46,6 +48,7 @@ namespace Dogs.Controllers
             {
                  dogs = (IOrderedQueryable<Dog>)dogs.Where(x=>x.DogTags.Any(x=>x.TagId==tagId));
             }
+
             var model = new IndexViewModel();
             int totalP = (int)Math.Ceiling(dogs.Count() / (double)model.LimitPage);
             dogs = (IOrderedQueryable<Dog>)dogs.Skip((page - 1) * model.LimitPage).Take(model.LimitPage);
@@ -61,6 +64,7 @@ namespace Dogs.Controllers
             return View(model);
         }
         
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

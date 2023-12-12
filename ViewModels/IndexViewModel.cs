@@ -16,5 +16,6 @@ namespace Dogs.ViewModels
         public int TotalPages { get; set; }
         public string? SearchBreed { get; set; }
         public int LimitPage { get; set; } = 6;
+
     }
 }
